@@ -2653,3 +2653,60 @@ GET xxxxx-*/_search?scroll=1m
   ```
 
   每次生成的是快照，最多是500个 超了会报错
+
+  # 20 sort 数据不存在的时候
+
+报错
+
+```
+es No mapping found for [data.collectTimestamp] in order to sort on
+
+
+
+{
+  "error": {
+    "root_cause": [
+      {
+        "type": "query_shard_exception",
+        "reason": "No mapping found for [data.collectTimestamp] in order to sort on",
+```
+
+
+
+**原因**
+
+`ElasticSearch` 的 `search api` 可以设置排序时忽略字段的哪些映射。默认情况下，如果没有与排序字段关联的映射，则搜索请求将失败。`unmapped_type` 选项允许设置忽略没有映射的字段，从而不对该字段排序。由于 `timestamp` 的 `mapping` 为 `date` 类型，因此，在搜索排序条件中增加 `{"timestamp":{"unmapped_type":"date"}}` 成功解决由于排序字段没有 `date` 映射引起的 `all shards failed` 问题。
+
+
+
+**解决方式**
+
+如果mapping中无此字段，则搜索请求将失败。[unmapped_type](https://www.elastic.co/guide/en/elasticsearch/reference/6.7/search-request-sort.html#_ignoring_unmapped_fields)选项允许您忽略没有mapping的字段，也不按它们排序。参数的值为该字段对应值的类型。
+
+代码示例
+
+```
+sort := elastic.NewFieldSort("age").Asc()
+sort.UnmappedType("date")
+searchResult, err := client.Search().SortBy(sort)
+
+```
+
+
+
+**语句示例**
+
+```
+{
+    "sort":[
+        {
+            "data.collectTimestamp":{
+                "order":"asc",
+                "unmapped_type":"date"
+            }
+        }
+    ]
+}
+```
+
+
