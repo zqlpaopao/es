@@ -9,6 +9,8 @@
 - [es基础操作语法](https://www.tizi365.com/archives/617.html)
 - [聚合分析](https://www.tizi365.com/archives/644.html)
 
+- [基础入门](https://mp.weixin.qq.com/s/PmCn1zpoLezBD-8cSwqHCQ)
+
 # 2 基础字段
 
 ## 2.0. 存储结构
